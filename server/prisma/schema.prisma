@@ -79,3 +79,12 @@ model QuickModel {
   @@id([make, model])
   @@map("quick_models")
 }
+
+model Login {
+  id       Int      @id @default(autoincrement())
+  date     DateTime @default(now())
+  userName String
+
+  @@map("logins")
+  @@index([date])
+}

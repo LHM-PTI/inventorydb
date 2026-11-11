@@ -1,12 +1,14 @@
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
   useMsal,
 } from "@azure/msal-react";
 import { InteractionStatus } from "@azure/msal-browser";
+import { apiFetch, setAccessTokenProvider } from "./api.js";
 import { loginRequest } from "./authConfig.js";
-import { setAccessTokenProvider } from "./api.js";
+
+const LOGIN_RECORDED_KEY = "inventorydb.loginRecorded";
 
 function LoginScreen() {
   const { instance, inProgress } = useMsal();
@@ -69,6 +71,17 @@ function AuthenticatedApp({ children }) {
       setAccessTokenProvider(async () => null);
     };
   }, [account, instance]);
+
+  useEffect(() => {
+    if (!tokenReady || !account) return;
+    if (sessionStorage.getItem(LOGIN_RECORDED_KEY)) return;
+
+    sessionStorage.setItem(LOGIN_RECORDED_KEY, "1");
+    apiFetch("/api/logins", { method: "POST" }).catch((err) => {
+      console.error("Failed to record login:", err);
+      sessionStorage.removeItem(LOGIN_RECORDED_KEY);
+    });
+  }, [tokenReady, account]);
 
   if (!tokenReady) return null;
   return children;

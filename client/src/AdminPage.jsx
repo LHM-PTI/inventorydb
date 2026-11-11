@@ -12,6 +12,9 @@ export default function AdminPage({ onBack }) {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [exportError, setExportError] = useState(null);
+  const [logins, setLogins] = useState([]);
+  const [loginsLoading, setLoginsLoading] = useState(true);
+  const [loginsError, setLoginsError] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -37,7 +40,32 @@ export default function AdminPage({ onBack }) {
       }
     }
 
+    async function loadLogins() {
+      setLoginsLoading(true);
+      setLoginsError(null);
+      try {
+        const response = await apiFetch("/api/logins?limit=10");
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to load logins");
+        }
+        if (!cancelled) {
+          setLogins(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setLogins([]);
+          setLoginsError(err.message || "Failed to load logins");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoginsLoading(false);
+        }
+      }
+    }
+
     loadCategories();
+    loadLogins();
     return () => {
       cancelled = true;
     };
@@ -248,6 +276,47 @@ export default function AdminPage({ onBack }) {
 
         {exportError && <div className="banner error">{exportError}</div>}
       </section>
+
+      <section className="panel">
+        <h2>Recent logins</h2>
+        <p className="muted import-help">
+          Last 10 recorded sign-ins to InventoryDB.
+        </p>
+
+        {loginsError && <div className="banner error">{loginsError}</div>}
+
+        {loginsLoading ? (
+          <p className="muted">Loading logins…</p>
+        ) : logins.length === 0 ? (
+          <p className="muted">No logins recorded yet.</p>
+        ) : (
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date/Time</th>
+                  <th>User</th>
+                </tr>
+              </thead>
+              <tbody>
+                {logins.map((login) => (
+                  <tr key={login.id}>
+                    <td>{formatLoginDate(login.date)}</td>
+                    <td>{login.userName || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
     </div>
   );
+}
+
+function formatLoginDate(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleString();
 }

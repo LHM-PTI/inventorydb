@@ -54,6 +54,48 @@ app.get("/api/me", (req, res) => {
   });
 });
 
+app.get("/api/logins", async (req, res) => {
+  try {
+    const rawLimit =
+      typeof req.query.limit === "string" ? Number(req.query.limit) : 10;
+    const limit = Number.isFinite(rawLimit)
+      ? Math.min(Math.max(Math.trunc(rawLimit), 1), 50)
+      : 10;
+
+    const logins = await prisma.login.findMany({
+      select: {
+        id: true,
+        date: true,
+        userName: true,
+      },
+      orderBy: { date: "desc" },
+      take: limit,
+    });
+    res.json(logins);
+  } catch (error) {
+    console.error("Failed to fetch logins:", error);
+    res.status(500).json({ error: "Failed to fetch logins" });
+  }
+});
+
+app.post("/api/logins", async (req, res) => {
+  try {
+    const userName = getRequestUserName(req);
+    const login = await prisma.login.create({
+      data: { userName },
+      select: {
+        id: true,
+        date: true,
+        userName: true,
+      },
+    });
+    res.status(201).json(login);
+  } catch (error) {
+    console.error("Failed to record login:", error);
+    res.status(500).json({ error: "Failed to record login" });
+  }
+});
+
 app.get("/api/categories", async (_req, res) => {
   try {
     const categories = await prisma.category.findMany({
