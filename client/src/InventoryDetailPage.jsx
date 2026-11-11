@@ -28,6 +28,13 @@ function formatIssuedTo(lastName, firstName) {
   return `${last},${first}`;
 }
 
+function formatLocationLabel(shortcode, locations) {
+  if (!shortcode) return null;
+  const match = locations.find((location) => location.shortcode === shortcode);
+  if (match?.name) return `${match.shortcode} - ${match.name}`;
+  return shortcode;
+}
+
 function itemToForm(item) {
   return {
     assetId: item.assetId ?? "",
@@ -385,7 +392,7 @@ export default function InventoryDetailPage({
           <>
             <div className="record-layout">
               <div className="record-row">
-                <Field label="Asset ID">
+                <Field label="Asset ID/Serial Num">
                   {isEditing ? (
                     <input
                       value={form.assetId}
@@ -398,7 +405,7 @@ export default function InventoryDetailPage({
               </div>
 
               <div className="record-row record-row-2">
-                <Field label="Manufacturer">
+                <Field label="Make">
                   {isEditing ? (
                     <input
                       value={form.manufacturer}
@@ -408,7 +415,7 @@ export default function InventoryDetailPage({
                     <ReadValue value={item.manufacturer} />
                   )}
                 </Field>
-                <Field label="Type">
+                <Field label="Model">
                   {isEditing ? (
                     <input
                       value={form.type}
@@ -480,7 +487,9 @@ export default function InventoryDetailPage({
                       ))}
                     </select>
                   ) : (
-                    <ReadValue value={item.location} />
+                    <ReadValue
+                      value={formatLocationLabel(item.location, locations)}
+                    />
                   )}
                 </Field>
                 {isEditing ? (

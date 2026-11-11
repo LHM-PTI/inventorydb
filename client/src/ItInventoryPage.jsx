@@ -207,7 +207,7 @@ export default function ItInventoryPage({
         <h2>Find &amp; filter</h2>
         <form className="filter-form" onSubmit={applyFilters}>
           <label>
-            Asset ID
+            Asset ID/Serial Num
             <input
               value={filters.assetId}
               onChange={(e) => updateFilter("assetId", e.target.value)}
@@ -300,13 +300,13 @@ export default function ItInventoryPage({
                   <thead>
                     <tr>
                       <SortableHeader
-                        label="Asset ID"
+                        label="Asset ID/Serial Num"
                         column="assetId"
                         sort={sort}
                         onSort={toggleSort}
                       />
                       <SortableHeader
-                        label="Type"
+                        label="Model"
                         column="type"
                         sort={sort}
                         onSort={toggleSort}
