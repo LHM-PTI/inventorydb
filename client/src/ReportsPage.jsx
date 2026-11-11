@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "./api.js";
 
-const STATUS_OPTIONS = ["In Use", "Available", "Removed"];
+const STATUS_OPTIONS = [
+  "In Use",
+  "Available",
+  "Damaged (in use)",
+  "Damaged (available)",
+  "Out of Service",
+];
 
 const AGING_OPTIONS = [
   { value: "", label: "All ages" },

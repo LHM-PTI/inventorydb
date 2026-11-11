@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "./api.js";
 
-const STATUS_OPTIONS = ["In Use", "Available", "Removed"];
+const STATUS_OPTIONS = [
+  "In Use",
+  "Available",
+  "Damaged (in use)",
+  "Damaged (available)",
+  "Out of Service",
+];
 
 function formatValue(value) {
   if (value == null || value === "") return "—";
@@ -97,6 +103,10 @@ export default function InventoryDetailPage({
   const [deleting, setDeleting] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [locations, setLocations] = useState([]);
+  const [pickerKind, setPickerKind] = useState(null);
+  const [pickerItems, setPickerItems] = useState([]);
+  const [pickerLoading, setPickerLoading] = useState(false);
+  const [pickerError, setPickerError] = useState(null);
   const [error, setError] = useState(null);
   const [canManage, setCanManage] = useState(false);
   const [permissionsLoading, setPermissionsLoading] = useState(true);
@@ -168,6 +178,70 @@ export default function InventoryDetailPage({
       cancelled = true;
     };
   }, []);
+
+  async function openMakePicker() {
+    setPickerKind("make");
+    setPickerError(null);
+    setPickerLoading(true);
+    setPickerItems([]);
+    try {
+      const response = await apiFetch("/api/quick-makes");
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to load makes");
+      }
+      setPickerItems(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error(err);
+      setPickerError(err.message || "Failed to load makes");
+      setPickerItems([]);
+    } finally {
+      setPickerLoading(false);
+    }
+  }
+
+  async function openModelPicker() {
+    const make = form?.manufacturer?.trim() ?? "";
+    setPickerKind("model");
+    setPickerError(null);
+    setPickerLoading(true);
+    setPickerItems([]);
+    try {
+      const params = new URLSearchParams();
+      if (make) params.set("make", make);
+      const query = params.toString();
+      const response = await apiFetch(
+        `/api/quick-models${query ? `?${query}` : ""}`
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to load models");
+      }
+      setPickerItems(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error(err);
+      setPickerError(err.message || "Failed to load models");
+      setPickerItems([]);
+    } finally {
+      setPickerLoading(false);
+    }
+  }
+
+  function closePicker() {
+    setPickerKind(null);
+    setPickerItems([]);
+    setPickerError(null);
+    setPickerLoading(false);
+  }
+
+  function selectPickerItem(item) {
+    if (pickerKind === "make") {
+      updateField("manufacturer", item.make);
+    } else if (pickerKind === "model") {
+      updateField("type", item.model);
+    }
+    closePicker();
+  }
 
   useEffect(() => {
     if (isNew) {
@@ -405,26 +479,52 @@ export default function InventoryDetailPage({
               </div>
 
               <div className="record-row record-row-2">
-                <Field label="Make">
+                <div className="record-field">
+                  <span className="record-label">Make</span>
                   {isEditing ? (
-                    <input
-                      value={form.manufacturer}
-                      onChange={(e) => updateField("manufacturer", e.target.value)}
-                    />
+                    <div className="field-with-picker">
+                      <input
+                        value={form.manufacturer}
+                        onChange={(e) =>
+                          updateField("manufacturer", e.target.value)
+                        }
+                      />
+                      <button
+                        type="button"
+                        className="picker-trigger"
+                        title="Choose from quick makes"
+                        aria-label="Choose from quick makes"
+                        onClick={openMakePicker}
+                      >
+                        ?
+                      </button>
+                    </div>
                   ) : (
                     <ReadValue value={item.manufacturer} />
                   )}
-                </Field>
-                <Field label="Model">
+                </div>
+                <div className="record-field">
+                  <span className="record-label">Model</span>
                   {isEditing ? (
-                    <input
-                      value={form.type}
-                      onChange={(e) => updateField("type", e.target.value)}
-                    />
+                    <div className="field-with-picker">
+                      <input
+                        value={form.type}
+                        onChange={(e) => updateField("type", e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        className="picker-trigger"
+                        title="Choose from quick models"
+                        aria-label="Choose from quick models"
+                        onClick={openModelPicker}
+                      >
+                        ?
+                      </button>
+                    </div>
                   ) : (
                     <ReadValue value={item.type} />
                   )}
-                </Field>
+                </div>
               </div>
 
               <div className="record-row">
@@ -634,6 +734,79 @@ export default function InventoryDetailPage({
           </>
         ) : null}
       </section>
+
+      {pickerKind ? (
+        <div
+          className="picker-modal-backdrop"
+          role="presentation"
+          onClick={closePicker}
+        >
+          <div
+            className="picker-modal panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="quick-picker-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="quick-picker-title">
+              {pickerKind === "make" ? "Select Make" : "Select Model"}
+            </h2>
+            {pickerKind === "model" && form?.manufacturer?.trim() ? (
+              <p className="muted">
+                Filtered by make: {form.manufacturer.trim()}
+              </p>
+            ) : null}
+            {pickerLoading ? (
+              <p className="muted">
+                {pickerKind === "make" ? "Loading makes…" : "Loading models…"}
+              </p>
+            ) : pickerError ? (
+              <div className="banner error">{pickerError}</div>
+            ) : pickerItems.length === 0 ? (
+              <p className="muted">
+                {pickerKind === "make"
+                  ? "No quick makes available."
+                  : "No quick models available."}
+              </p>
+            ) : (
+              <ul className="picker-list">
+                {pickerItems.map((row) => {
+                  const key =
+                    pickerKind === "make"
+                      ? row.make
+                      : `${row.make}::${row.model}`;
+                  const label =
+                    pickerKind === "make"
+                      ? row.make
+                      : form?.manufacturer?.trim()
+                        ? row.model
+                        : `${row.make} - ${row.model}`;
+                  return (
+                    <li key={key}>
+                      <button
+                        type="button"
+                        className="picker-option"
+                        onClick={() => selectPickerItem(row)}
+                      >
+                        {label}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            <div className="actions">
+              <button
+                type="button"
+                className="secondary"
+                onClick={closePicker}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

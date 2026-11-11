@@ -366,6 +366,35 @@ app.get("/api/locations", async (_req, res) => {
   }
 });
 
+app.get("/api/quick-makes", async (_req, res) => {
+  try {
+    const makes = await prisma.quickMake.findMany({
+      select: { make: true },
+      orderBy: { make: "asc" },
+    });
+    res.json(makes);
+  } catch (error) {
+    console.error("Failed to fetch quick makes:", error);
+    res.status(500).json({ error: "Failed to fetch quick makes" });
+  }
+});
+
+app.get("/api/quick-models", async (req, res) => {
+  try {
+    const make =
+      typeof req.query.make === "string" ? req.query.make.trim() : "";
+    const models = await prisma.quickModel.findMany({
+      where: make ? { make } : undefined,
+      select: { make: true, model: true },
+      orderBy: [{ make: "asc" }, { model: "asc" }],
+    });
+    res.json(models);
+  } catch (error) {
+    console.error("Failed to fetch quick models:", error);
+    res.status(500).json({ error: "Failed to fetch quick models" });
+  }
+});
+
 app.get("/api/inventory/export", async (req, res) => {
   try {
     const categoryIdRaw =

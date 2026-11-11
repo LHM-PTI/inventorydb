@@ -65,3 +65,17 @@ model Log {
   @@index([assetId])
   @@index([date])
 }
+
+model QuickMake {
+  make String @id @db.VarChar(100)
+
+  @@map("quick_makes")
+}
+
+model QuickModel {
+  make  String @db.VarChar(100)
+  model String @db.VarChar(100)
+
+  @@id([make, model])
+  @@map("quick_models")
+}

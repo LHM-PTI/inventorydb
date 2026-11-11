@@ -1,7 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiFetch } from "./api.js";
 
-const STATUS_OPTIONS = ["In Use", "Available", "Removed"];
+const STATUS_OPTIONS = [
+  "In Use",
+  "Available",
+  "Damaged (in use)",
+  "Damaged (available)",
+  "Out of Service",
+];
 
 const emptyFilters = {
   assetId: "",
@@ -10,10 +16,44 @@ const emptyFilters = {
   name: "",
 };
 
+const FILTER_STORAGE_PREFIX = "inventorydb.listFilters.";
+
+function loadSavedFilters(categoryId) {
+  try {
+    const raw = sessionStorage.getItem(`${FILTER_STORAGE_PREFIX}${categoryId}`);
+    if (!raw) return { ...emptyFilters };
+    const parsed = JSON.parse(raw);
+    return {
+      assetId: typeof parsed.assetId === "string" ? parsed.assetId : "",
+      status: typeof parsed.status === "string" ? parsed.status : "",
+      location: typeof parsed.location === "string" ? parsed.location : "",
+      name: typeof parsed.name === "string" ? parsed.name : "",
+    };
+  } catch {
+    return { ...emptyFilters };
+  }
+}
+
+function saveFilters(categoryId, next) {
+  try {
+    const hasValues = Object.values(next).some((value) => String(value).trim());
+    const key = `${FILTER_STORAGE_PREFIX}${categoryId}`;
+    if (hasValues) {
+      sessionStorage.setItem(key, JSON.stringify(next));
+    } else {
+      sessionStorage.removeItem(key);
+    }
+  } catch {
+    // Ignore storage failures (private mode, quota, etc.)
+  }
+}
+
 function formatIssuedTo(lastName, firstName) {
   const last = lastName?.trim() ?? "";
   const first = firstName?.trim() ?? "";
   if (!last && !first) return "—";
+  if (!first) return last;
+  if (!last) return first;
   return `${last}, ${first}`;
 }
 
@@ -67,8 +107,10 @@ export default function ItInventoryPage({
 }) {
   const [items, setItems] = useState([]);
   const [locations, setLocations] = useState([]);
-  const [filters, setFilters] = useState(emptyFilters);
-  const [appliedFilters, setAppliedFilters] = useState(emptyFilters);
+  const [filters, setFilters] = useState(() => loadSavedFilters(categoryId));
+  const [appliedFilters, setAppliedFilters] = useState(() =>
+    loadSavedFilters(categoryId)
+  );
   const [sort, setSort] = useState({ key: "assetId", direction: "asc" });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -160,12 +202,15 @@ export default function ItInventoryPage({
 
   function applyFilters(event) {
     event.preventDefault();
-    setAppliedFilters({ ...filters });
+    const next = { ...filters };
+    setAppliedFilters(next);
+    saveFilters(categoryId, next);
   }
 
   function clearFilters() {
-    setFilters(emptyFilters);
-    setAppliedFilters(emptyFilters);
+    setFilters({ ...emptyFilters });
+    setAppliedFilters({ ...emptyFilters });
+    saveFilters(categoryId, emptyFilters);
   }
 
   function toggleSort(column) {
