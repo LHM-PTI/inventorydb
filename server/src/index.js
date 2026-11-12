@@ -437,6 +437,65 @@ app.get("/api/quick-models", async (req, res) => {
   }
 });
 
+app.get("/api/reports/check-in-aging", async (req, res) => {
+  try {
+    const location =
+      typeof req.query.location === "string" ? req.query.location.trim() : "";
+    const categoryIdRaw =
+      typeof req.query.categoryId === "string" ? req.query.categoryId.trim() : "";
+    const cutoff = new Date();
+    cutoff.setMonth(cutoff.getMonth() - 3);
+
+    const categories = await prisma.category.findMany({
+      select: { id: true, category: true },
+    });
+    const categoryIds = new Map(
+      categories.map((row) => [row.category, row.id])
+    );
+
+    let categoryName;
+    if (categoryIdRaw) {
+      const categoryId = Number(categoryIdRaw);
+      if (!Number.isInteger(categoryId) || categoryId < 1) {
+        return res.status(400).json({ error: "Invalid categoryId" });
+      }
+      const match = categories.find((row) => row.id === categoryId);
+      if (!match) {
+        return res.status(404).json({ error: "Category not found" });
+      }
+      categoryName = match.category;
+    }
+
+    const items = await prisma.inventory.findMany({
+      where: {
+        ...(categoryName && { category: categoryName }),
+        ...(location && { location }),
+        OR: [{ lastCheckIn: null }, { lastCheckIn: { lt: cutoff } }],
+      },
+      select: {
+        id: true,
+        assetId: true,
+        category: true,
+        type: true,
+        location: true,
+        lastName: true,
+        firstName: true,
+        lastCheckIn: true,
+      },
+      orderBy: [{ lastCheckIn: "asc" }, { assetId: "asc" }],
+    });
+    res.json(
+      items.map((item) => ({
+        ...item,
+        categoryId: categoryIds.get(item.category) ?? null,
+      }))
+    );
+  } catch (error) {
+    console.error("Failed to load check-in aging report:", error);
+    res.status(500).json({ error: "Failed to load check-in aging report" });
+  }
+});
+
 app.get("/api/inventory/export", async (req, res) => {
   try {
     const categoryIdRaw =

@@ -5,8 +5,10 @@ import AssetLogPage from "./AssetLogPage.jsx";
 import AssetStickerPage from "./AssetStickerPage.jsx";
 import { useAuthUser } from "./AuthGate.jsx";
 import { authEnabled } from "./authConfig.js";
+import CheckInAgingReportPage from "./CheckInAgingReportPage.jsx";
 import InventoryDetailPage from "./InventoryDetailPage.jsx";
 import ItInventoryPage from "./ItInventoryPage.jsx";
+import LocationLabelsPage from "./LocationLabelsPage.jsx";
 import OpenTicketPage from "./OpenTicketPage.jsx";
 import ReportsIndexPage from "./ReportsIndexPage.jsx";
 import ReportsPage from "./ReportsPage.jsx";
@@ -87,6 +89,8 @@ function getPageFromHash() {
   if (hash === "#/admin") return { name: "admin" };
   if (hash === "#/reports") return { name: "reports" };
   if (hash === "#/reports/csv") return { name: "reports-csv" };
+  if (hash === "#/reports/check-in-aging") return { name: "reports-check-in-aging" };
+  if (hash === "#/reports/location-labels") return { name: "reports-location-labels" };
   if (hash === "#/scan") return { name: "scan" };
 
   const inventoryPage = parseInventoryHash(hash);
@@ -378,6 +382,26 @@ export default function App() {
   if (page.name === "reports-csv") {
     return (
       <ReportsPage
+        onBack={() => {
+          window.location.hash = "#/reports";
+        }}
+      />
+    );
+  }
+
+  if (page.name === "reports-check-in-aging") {
+    return (
+      <CheckInAgingReportPage
+        onBack={() => {
+          window.location.hash = "#/reports";
+        }}
+      />
+    );
+  }
+
+  if (page.name === "reports-location-labels") {
+    return (
+      <LocationLabelsPage
         onBack={() => {
           window.location.hash = "#/reports";
         }}

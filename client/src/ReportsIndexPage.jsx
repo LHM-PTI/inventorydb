@@ -13,6 +13,22 @@ export default function ReportsIndexPage({ onBack }) {
         <button
           type="button"
           onClick={() => {
+            window.location.hash = "#/reports/check-in-aging";
+          }}
+        >
+          Check In Aging
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            window.location.hash = "#/reports/location-labels";
+          }}
+        >
+          Location Labels
+        </button>
+        <button
+          type="button"
+          onClick={() => {
             window.location.hash = "#/reports/csv";
           }}
         >

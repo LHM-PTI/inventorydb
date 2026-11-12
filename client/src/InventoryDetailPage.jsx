@@ -31,6 +31,8 @@ function formatIssuedTo(lastName, firstName) {
   const last = lastName?.trim() ?? "";
   const first = firstName?.trim() ?? "";
   if (!last && !first) return null;
+  if (!first) return last;
+  if (!last) return first;
   return `${last},${first}`;
 }
 
