@@ -120,9 +120,9 @@ export default function ReportsPage({ onBack }) {
     <div className="app">
       <header className="header">
         <button type="button" className="secondary back-button" onClick={onBack}>
-          ← Home
+          ← Reports
         </button>
-        <h1>Reports</h1>
+        <h1>CSV Download</h1>
         <p>Filter inventory data and download a CSV report.</p>
       </header>
 

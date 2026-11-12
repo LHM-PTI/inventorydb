@@ -8,6 +8,7 @@ import { authEnabled } from "./authConfig.js";
 import InventoryDetailPage from "./InventoryDetailPage.jsx";
 import ItInventoryPage from "./ItInventoryPage.jsx";
 import OpenTicketPage from "./OpenTicketPage.jsx";
+import ReportsIndexPage from "./ReportsIndexPage.jsx";
 import ReportsPage from "./ReportsPage.jsx";
 
 const ScanPage = lazy(() => import("./ScanPage.jsx"));
@@ -85,6 +86,7 @@ function getPageFromHash() {
 
   if (hash === "#/admin") return { name: "admin" };
   if (hash === "#/reports") return { name: "reports" };
+  if (hash === "#/reports/csv") return { name: "reports-csv" };
   if (hash === "#/scan") return { name: "scan" };
 
   const inventoryPage = parseInventoryHash(hash);
@@ -350,7 +352,17 @@ export default function App() {
   }
 
   if (page.name === "reports") {
-    return <ReportsPage onBack={goHome} />;
+    return <ReportsIndexPage onBack={goHome} />;
+  }
+
+  if (page.name === "reports-csv") {
+    return (
+      <ReportsPage
+        onBack={() => {
+          window.location.hash = "#/reports";
+        }}
+      />
+    );
   }
 
   if (page.name === "scan") {
