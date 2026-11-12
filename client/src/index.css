@@ -1,23 +1,23 @@
 :root {
-  color-scheme: dark;
-  --bg: #0b1726;
-  --bg-mid: #102033;
-  --bg-deep: #0a1420;
-  --panel: rgba(16, 28, 45, 0.88);
-  --ink: #e8eef5;
-  --muted: #9bb0c4;
-  --line: rgba(146, 176, 204, 0.22);
-  --accent: #3d7ea6;
-  --accent-hover: #4f96c2;
-  --danger: #e07a7a;
-  --danger-hover: #f0a0a0;
-  --error-bg: rgba(140, 48, 48, 0.28);
-  --error-ink: #ffc9c9;
-  --success-bg: rgba(45, 110, 90, 0.28);
-  --success-ink: #b7e6d4;
-  --input-bg: rgba(8, 18, 32, 0.85);
-  --scan: #6d8fd4;
-  --scan-hover: #87a6e0;
+  color-scheme: light;
+  --bg: #f4f8fb;
+  --bg-mid: #e7f0f6;
+  --bg-deep: #f7fafc;
+  --panel: rgba(255, 255, 255, 0.92);
+  --ink: #1a2a3a;
+  --muted: #5c7286;
+  --line: rgba(36, 72, 104, 0.16);
+  --accent: #2f7198;
+  --accent-hover: #245a7a;
+  --danger: #b42323;
+  --danger-hover: #8e1b1b;
+  --error-bg: rgba(180, 35, 35, 0.1);
+  --error-ink: #8a1f1f;
+  --success-bg: rgba(20, 110, 70, 0.12);
+  --success-ink: #0f6b45;
+  --input-bg: #ffffff;
+  --scan: #4d74b8;
+  --scan-hover: #3d629e;
   font-family: "Segoe UI", "Helvetica Neue", sans-serif;
   line-height: 1.5;
   color: var(--ink);
@@ -40,9 +40,9 @@ body {
   position: relative;
   color: var(--ink);
   background:
-    linear-gradient(180deg, rgba(8, 18, 32, 0.55) 0%, rgba(8, 18, 32, 0.82) 100%),
-    radial-gradient(circle at 18% 12%, rgba(61, 126, 166, 0.28), transparent 42%),
-    radial-gradient(circle at 86% 18%, rgba(163, 148, 133, 0.16), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(226, 236, 244, 0.75) 100%),
+    radial-gradient(circle at 18% 12%, rgba(61, 126, 166, 0.16), transparent 42%),
+    radial-gradient(circle at 86% 18%, rgba(163, 148, 133, 0.1), transparent 36%),
     linear-gradient(var(--bg), var(--bg-mid) 48%, var(--bg-deep));
   background-attachment: fixed;
 }
@@ -53,8 +53,8 @@ body::before {
   inset: 0;
   z-index: 0;
   background-image:
-    linear-gradient(rgba(146, 176, 204, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(146, 176, 204, 0.07) 1px, transparent 1px);
+    linear-gradient(rgba(36, 72, 104, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 72, 104, 0.07) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(circle at center, black 30%, transparent 88%);
   pointer-events: none;
@@ -67,7 +67,7 @@ body::after {
   z-index: 0;
   background: radial-gradient(
     circle at 50% 120%,
-    rgba(61, 126, 166, 0.16),
+    rgba(61, 126, 166, 0.1),
     transparent 45%
   );
   pointer-events: none;
@@ -231,7 +231,7 @@ select:focus {
 }
 
 option {
-  background: #102033;
+  background: #ffffff;
   color: var(--ink);
 }
 
@@ -267,7 +267,7 @@ button.secondary {
 }
 
 button.secondary:hover:not(:disabled) {
-  background: rgba(146, 176, 204, 0.12);
+  background: rgba(61, 126, 166, 0.08);
 }
 
 button.scan-button {
@@ -457,7 +457,7 @@ th {
 
 .asset-id-button:hover:not(:disabled) {
   background: transparent;
-  color: #9ec8e4;
+  color: var(--accent);
 }
 
 .icon-button {
@@ -474,7 +474,7 @@ th {
 
 .icon-button:hover:not(:disabled) {
   background: rgba(61, 126, 166, 0.18);
-  color: #9ec8e4;
+  color: var(--accent);
 }
 
 .sr-only {
@@ -561,7 +561,7 @@ th {
 }
 
 .picker-trigger:hover:not(:disabled) {
-  background: rgba(146, 176, 204, 0.12);
+  background: rgba(61, 126, 166, 0.08);
 }
 
 .picker-modal-backdrop {
@@ -571,7 +571,7 @@ th {
   display: grid;
   place-items: center;
   padding: 1rem;
-  background: rgba(4, 10, 18, 0.72);
+  background: rgba(20, 36, 52, 0.4);
 }
 
 .picker-modal {
@@ -611,7 +611,7 @@ th {
 }
 
 .picker-option:hover:not(:disabled) {
-  background: rgba(146, 176, 204, 0.14);
+  background: rgba(61, 126, 166, 0.1);
 }
 
 .record-actions {
@@ -645,7 +645,7 @@ th {
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: #07101b;
+  background: #d7e2ec;
 }
 
 .qr-reader:empty {
@@ -816,7 +816,7 @@ th {
 
 code {
   font-size: 0.875rem;
-  background: rgba(146, 176, 204, 0.14);
+  background: rgba(61, 126, 166, 0.1);
   padding: 0.1rem 0.35rem;
   border-radius: 4px;
 }
