@@ -1,9 +1,5 @@
 import { useEffect, useLayoutEffect, useState } from "react";
-import {
-  AuthenticatedTemplate,
-  UnauthenticatedTemplate,
-  useMsal,
-} from "@azure/msal-react";
+import { useMsal } from "@azure/msal-react";
 import { InteractionStatus } from "@azure/msal-browser";
 import { apiFetch, setAccessTokenProvider } from "./api.js";
 import { loginRequest } from "./authConfig.js";
@@ -102,21 +98,41 @@ function SetupRequired() {
   );
 }
 
+// Once a session is established, keep the app mounted if MSAL briefly reports
+// no accounts. Otherwise the sign-in screen flashes between hash routes.
+let sessionEstablished = false;
+
+function currentAccount(instance, accounts) {
+  return (
+    instance.getActiveAccount() ||
+    accounts[0] ||
+    instance.getAllAccounts()[0] ||
+    null
+  );
+}
+
+function AuthSwitch({ children }) {
+  const { instance, accounts, inProgress } = useMsal();
+  const account = currentAccount(instance, accounts);
+  if (account) sessionEstablished = true;
+
+  if (account || sessionEstablished) {
+    return <AuthenticatedApp>{children}</AuthenticatedApp>;
+  }
+
+  if (inProgress !== InteractionStatus.None) {
+    return null;
+  }
+
+  return <LoginScreen />;
+}
+
 export function AuthGate({ enabled, children }) {
   if (!enabled) {
     return <SetupRequired />;
   }
 
-  return (
-    <>
-      <AuthenticatedTemplate>
-        <AuthenticatedApp>{children}</AuthenticatedApp>
-      </AuthenticatedTemplate>
-      <UnauthenticatedTemplate>
-        <LoginScreen />
-      </UnauthenticatedTemplate>
-    </>
-  );
+  return <AuthSwitch>{children}</AuthSwitch>;
 }
 
 export function useAuthUser() {

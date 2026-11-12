@@ -104,10 +104,20 @@ function SignOutButton() {
   );
 }
 
+let homeCache = null;
+
+function rememberHome(patch) {
+  homeCache = {
+    categories: homeCache?.categories ?? [],
+    me: homeCache?.me ?? null,
+    ...patch,
+  };
+}
+
 function HomePage() {
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(() => homeCache?.categories ?? []);
   const [categoriesError, setCategoriesError] = useState(null);
-  const [me, setMe] = useState(null);
+  const [me, setMe] = useState(() => homeCache?.me ?? null);
   const [meError, setMeError] = useState(null);
 
   useEffect(() => {
@@ -123,6 +133,7 @@ function HomePage() {
         if (!cancelled) {
           setCategories(data);
           setCategoriesError(null);
+          rememberHome({ categories: data });
         }
       } catch (err) {
         if (!cancelled) {
@@ -135,12 +146,14 @@ function HomePage() {
     async function loadMe() {
       if (authDisabled || !authEnabled) {
         if (!cancelled) {
-          setMe({
+          const bypass = {
             name: null,
             preferredUsername: null,
             roles: [],
             authDisabled: true,
-          });
+          };
+          setMe(bypass);
+          rememberHome({ me: bypass });
         }
         return;
       }
@@ -158,6 +171,7 @@ function HomePage() {
         if (!cancelled) {
           setMe(data);
           setMeError(null);
+          rememberHome({ me: data });
         }
       } catch (err) {
         if (!cancelled) {
@@ -190,6 +204,12 @@ function HomePage() {
     roleSet.has("inventory.editor") ||
     roleSet.has("inventorydb.editor");
   const canAccessInventory = isAdmin || isEditor;
+
+  // Avoid painting the centered title shell while the session is still loading.
+  // That empty screen is easy to mistake for the sign-in page.
+  if (!me && !meError) {
+    return null;
+  }
 
   return (
     <div className="app home">
