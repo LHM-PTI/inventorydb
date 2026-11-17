@@ -11,10 +11,13 @@ const STATUS_OPTIONS = [
 
 function formatValue(value) {
   if (value == null || value === "") return "—";
-  if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
-    const date = new Date(value);
-    if (!Number.isNaN(date.getTime())) {
-      return date.toLocaleDateString();
+  if (typeof value === "string") {
+    const match = value.match(/^(\d{4})-(\d{2})-(\d{2})(?:T|$)/);
+    if (match) {
+      const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+      if (!Number.isNaN(date.getTime())) {
+        return date.toLocaleDateString();
+      }
     }
   }
   return String(value);
@@ -50,6 +53,7 @@ function itemToForm(item) {
     type: item.type ?? "",
     status: item.status ?? "",
     issued: toDateInputValue(item.issued),
+    warranty: toDateInputValue(item.warranty),
     lastCheckIn: toDateInputValue(item.lastCheckIn),
     location: item.location ?? "",
     lastName: item.lastName ?? "",
@@ -65,6 +69,7 @@ function emptyForm() {
     type: "",
     status: "Available",
     issued: "",
+    warranty: "",
     lastCheckIn: "",
     location: "",
     lastName: "",
@@ -570,6 +575,20 @@ export default function InventoryDetailPage({
                     />
                   ) : (
                     <ReadValue value={item.lastCheckIn} />
+                  )}
+                </Field>
+              </div>
+
+              <div className="record-row record-row-2">
+                <Field label="Warranty">
+                  {isEditing ? (
+                    <input
+                      type="date"
+                      value={form.warranty}
+                      onChange={(e) => updateField("warranty", e.target.value)}
+                    />
+                  ) : (
+                    <ReadValue value={item.warranty} />
                   )}
                 </Field>
               </div>

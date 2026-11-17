@@ -26,6 +26,7 @@ model Inventory {
   manufacturer String?
   type         String?
   issued       DateTime?
+  warranty     DateTime?
   location     String?
   lastName     String?
   firstName    String?

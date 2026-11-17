@@ -304,6 +304,7 @@ app.post("/api/inventory", async (req, res) => {
       type,
       status,
       issued,
+      warranty,
       lastCheckIn,
       location,
       lastName,
@@ -363,6 +364,7 @@ app.post("/api/inventory", async (req, res) => {
         type: emptyToNull(type),
         status: emptyToNull(status) ?? "Available",
         issued: parseDate(issued),
+        warranty: parseDate(warranty),
         lastCheckIn: parseDate(lastCheckIn),
         location: emptyToNull(location),
         lastName: emptyToNull(lastName),
@@ -778,7 +780,7 @@ app.post("/api/inventory/:id/ticket", async (req, res) => {
       await writeInventoryLog(prisma, {
         userName: getRequestUserName(req),
         assetId,
-        message: "Ticket opened",
+        message: `Ticket Opened-${description.replace(/\s+/g, " ").slice(0, 30)}`,
       });
     } catch (logError) {
       console.error("Failed to write inventory log:", logError);
@@ -804,6 +806,7 @@ app.put("/api/inventory/:id", async (req, res) => {
       type,
       status,
       issued,
+      warranty,
       lastCheckIn,
       location,
       lastName,
@@ -847,6 +850,7 @@ app.put("/api/inventory/:id", async (req, res) => {
         type: emptyToNull(type),
         status: emptyToNull(status),
         issued: parseDate(issued),
+        warranty: parseDate(warranty),
         lastCheckIn: nextLastCheckIn,
         location: emptyToNull(location),
         lastName: emptyToNull(lastName),
@@ -1018,3 +1022,4 @@ app.listen(PORT, async () => {
     console.error("Failed to verify SMTP:", error.message);
   }
 });
+
