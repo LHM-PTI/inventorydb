@@ -496,6 +496,50 @@ app.get("/api/reports/check-in-aging", async (req, res) => {
   }
 });
 
+app.get("/api/reports/finance", async (req, res) => {
+  try {
+    const categoryIdRaw =
+      typeof req.query.categoryId === "string" ? req.query.categoryId.trim() : "";
+
+    let categoryName;
+    if (categoryIdRaw) {
+      const categoryId = Number(categoryIdRaw);
+      if (!Number.isInteger(categoryId) || categoryId < 1) {
+        return res.status(400).json({ error: "Invalid categoryId" });
+      }
+      const category = await prisma.category.findUnique({
+        where: { id: categoryId },
+        select: { category: true },
+      });
+      if (!category) {
+        return res.status(404).json({ error: "Category not found" });
+      }
+      categoryName = category.category;
+    }
+
+    const items = await prisma.inventory.findMany({
+      where: categoryName ? { category: categoryName } : undefined,
+      select: {
+        id: true,
+        assetId: true,
+        manufacturer: true,
+        type: true,
+        status: true,
+        issued: true,
+        lastCheckIn: true,
+        location: true,
+        lastName: true,
+        firstName: true,
+      },
+      orderBy: [{ location: "asc" }, { assetId: "asc" }],
+    });
+    res.json(items);
+  } catch (error) {
+    console.error("Failed to load finance report:", error);
+    res.status(500).json({ error: "Failed to load finance report" });
+  }
+});
+
 app.get("/api/inventory/export", async (req, res) => {
   try {
     const categoryIdRaw =

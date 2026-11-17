@@ -6,6 +6,7 @@ import AssetStickerPage from "./AssetStickerPage.jsx";
 import { useAuthUser } from "./AuthGate.jsx";
 import { authEnabled } from "./authConfig.js";
 import CheckInAgingReportPage from "./CheckInAgingReportPage.jsx";
+import FinanceReportPage from "./FinanceReportPage.jsx";
 import InventoryDetailPage from "./InventoryDetailPage.jsx";
 import ItInventoryPage from "./ItInventoryPage.jsx";
 import LocationLabelsPage from "./LocationLabelsPage.jsx";
@@ -90,6 +91,7 @@ function getPageFromHash() {
   if (hash === "#/reports") return { name: "reports" };
   if (hash === "#/reports/csv") return { name: "reports-csv" };
   if (hash === "#/reports/check-in-aging") return { name: "reports-check-in-aging" };
+  if (hash === "#/reports/finance") return { name: "reports-finance" };
   if (hash === "#/reports/location-labels") return { name: "reports-location-labels" };
   if (hash === "#/scan") return { name: "scan" };
 
@@ -392,6 +394,16 @@ export default function App() {
   if (page.name === "reports-check-in-aging") {
     return (
       <CheckInAgingReportPage
+        onBack={() => {
+          window.location.hash = "#/reports";
+        }}
+      />
+    );
+  }
+
+  if (page.name === "reports-finance") {
+    return (
+      <FinanceReportPage
         onBack={() => {
           window.location.hash = "#/reports";
         }}

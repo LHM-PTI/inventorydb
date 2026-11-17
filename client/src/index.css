@@ -96,6 +96,10 @@ body::after {
   color: var(--muted);
 }
 
+.print-only {
+  display: none;
+}
+
 .home {
   display: flex;
   flex-direction: column;
@@ -397,6 +401,14 @@ th {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--muted);
+}
+
+.finance-report tr.out-of-service td {
+  background: #e4e7eb;
+}
+
+.finance-report tr.checkin-overdue td {
+  background: #f8d4d4;
 }
 
 .sort-header {
@@ -770,11 +782,22 @@ th {
   }
 }
 
+@page {
+  size: 8.5in 11in;
+  margin: 0.5in;
+}
+
+@page finance {
+  size: 8.5in 11in;
+  margin: 0.5in;
+}
+
+@page label {
+  size: 3.5in 1.125in;
+  margin: 0;
+}
+
 @media print {
-  @page {
-    size: 3.5in 1.125in;
-    margin: 0;
-  }
 
   body,
   body::before,
@@ -786,12 +809,60 @@ th {
     display: none !important;
   }
 
+  .print-only {
+    display: block;
+  }
+
+  .finance-report .finance-report-subtitle {
+    margin: 0 0 1rem;
+    color: #000;
+    font-size: 12pt;
+  }
+
   .app.sticker-page,
   .app.location-labels-page {
+    page: label;
     padding: 0;
     max-width: none;
     min-height: auto;
     background: white;
+  }
+
+  .finance-report {
+    page: finance;
+    max-width: none;
+    background: white;
+  }
+
+  .finance-report table {
+    width: 100%;
+    font-size: 9pt;
+  }
+
+  .finance-report th,
+  .finance-report td {
+    padding: 0.2rem 0.3rem;
+  }
+
+  .finance-report .panel {
+    border: 0;
+    box-shadow: none;
+    background: white;
+    padding: 0 0 1rem;
+  }
+
+  .finance-report h2 {
+    break-after: avoid;
+  }
+
+  .finance-report tr {
+    break-inside: avoid;
+  }
+
+  .finance-report tr.out-of-service td,
+  .finance-report tr.checkin-overdue td {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 
   .sticker-sheet {

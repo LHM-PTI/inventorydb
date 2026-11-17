@@ -21,6 +21,14 @@ export default function ReportsIndexPage({ onBack }) {
         <button
           type="button"
           onClick={() => {
+            window.location.hash = "#/reports/finance";
+          }}
+        >
+          Finance Report
+        </button>
+        <button
+          type="button"
+          onClick={() => {
             window.location.hash = "#/reports/location-labels";
           }}
         >
