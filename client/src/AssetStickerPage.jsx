@@ -1,16 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import { QRCodeSVG } from "qrcode.react";
+import { useEffect, useState } from "react";
+import AssetLabelCard from "./AssetLabelCard.jsx";
 import { apiFetch } from "./api.js";
 
 export default function AssetStickerPage({ id, categoryId }) {
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const assetUrl = useMemo(() => {
-    const base = `${window.location.origin}${window.location.pathname}`;
-    return `${base}#/inventory/${categoryId}/${id}`;
-  }, [categoryId, id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -72,21 +67,12 @@ export default function AssetStickerPage({ id, categoryId }) {
       {loading ? (
         <p className="muted">Loading sticker…</p>
       ) : item ? (
-        <section className="sticker-card panel" aria-label="Asset sticker">
-          <div className="sticker-logo">
-            <img
-              src="/lhm-pti-logo.png"
-              alt="LHM Physical Therapy Institute"
-            />
-          </div>
-          <div className="sticker-meta">
-            <div className="sticker-asset-id">{item.assetId}</div>
-            {item.type ? <div className="sticker-type">{item.type}</div> : null}
-          </div>
-          <div className="sticker-qr">
-            <QRCodeSVG value={assetUrl} size={160} level="M" />
-          </div>
-        </section>
+        <AssetLabelCard
+          id={item.id}
+          categoryId={categoryId}
+          assetId={item.assetId}
+          type={item.type}
+        />
       ) : null}
     </div>
   );

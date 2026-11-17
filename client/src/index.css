@@ -748,6 +748,13 @@ th {
   height: 0.88in;
 }
 
+.sticker-sheet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .sticker-url {
   grid-column: 1 / -1;
   font-size: 0.75rem;
@@ -779,11 +786,27 @@ th {
     display: none !important;
   }
 
-  .app.sticker-page {
+  .app.sticker-page,
+  .app.location-labels-page {
     padding: 0;
     max-width: none;
     min-height: auto;
     background: white;
+  }
+
+  .sticker-sheet {
+    display: block;
+    gap: 0;
+  }
+
+  .sticker-sheet .sticker-card {
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .sticker-sheet .sticker-card:last-child {
+    break-after: auto;
+    page-break-after: auto;
   }
 
   .sticker-card {
