@@ -728,7 +728,7 @@ export default function InventoryDetailPage({
                     onClick={openAssetSticker}
                     disabled={deleting}
                   >
-                    Print Asset Sticker
+                    Print Asset Label
                   </button>
                 </>
               )}

@@ -678,12 +678,12 @@ th {
 
 .sticker-card {
   display: grid;
-  grid-template-columns: 0.75in 1fr 0.95in;
+  grid-template-columns: 0.62in 1fr 0.88in;
   align-items: center;
-  gap: 0.06in;
-  width: 3.625in;
-  height: 1.25in;
-  padding: 0.08in;
+  gap: 0.04in;
+  width: 3.5in;
+  height: 1.125in;
+  padding: 0.04in 0.2in 0.04in 0.04in;
   overflow: hidden;
   text-align: left;
   color: #1c1a16;
@@ -701,10 +701,11 @@ th {
 .sticker-logo img {
   display: block;
   width: 100%;
-  max-width: 0.72in;
-  max-height: 1.05in;
+  max-width: 0.58in;
+  max-height: 0.98in;
   height: auto;
   object-fit: contain;
+  filter: brightness(0);
 }
 
 .sticker-meta {
@@ -717,13 +718,6 @@ th {
   min-width: 0;
 }
 
-.sticker-label {
-  font-size: 7pt;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #6b655c;
-}
-
 .sticker-asset-id {
   font-size: 13pt;
   line-height: 1.05;
@@ -733,7 +727,7 @@ th {
 }
 
 .sticker-type {
-  color: #6b655c;
+  color: inherit;
   max-width: 100%;
   overflow: hidden;
   font-size: 7pt;
@@ -750,8 +744,8 @@ th {
 
 .sticker-qr svg {
   display: block;
-  width: 0.95in;
-  height: 0.95in;
+  width: 0.88in;
+  height: 0.88in;
 }
 
 .sticker-url {
@@ -771,7 +765,7 @@ th {
 
 @media print {
   @page {
-    size: 3.625in 1.25in;
+    size: 3.5in 1.125in;
     margin: 0;
   }
 
@@ -794,15 +788,15 @@ th {
 
   .sticker-card {
     display: grid;
-    grid-template-columns: 0.75in 1fr 0.95in;
-    width: 3.625in;
-    height: 1.25in;
+    grid-template-columns: 0.62in 1fr 0.88in;
+    width: 3.5in;
+    height: 1.125in;
     max-width: none;
     border: 0;
     border-radius: 0;
     box-shadow: none;
     margin: 0;
-    padding: 0.08in;
+    padding: 0.04in 0.2in 0.04in 0.04in;
     break-inside: avoid;
     text-align: left;
     color: #000;
@@ -810,7 +804,13 @@ th {
   }
 
   .sticker-logo img {
-    max-width: 0.72in;
+    max-width: 0.58in;
+    max-height: 0.98in;
+  }
+
+  .sticker-qr svg {
+    width: 0.88in;
+    height: 0.88in;
   }
 }
 

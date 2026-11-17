@@ -47,9 +47,9 @@ export default function AssetStickerPage({ id, categoryId }) {
   return (
     <div className="app sticker-page">
       <header className="header sticker-header no-print">
-        <h1>Asset Sticker</h1>
+        <h1>Asset Label</h1>
         <p>
-          Sized for an iDPRT SP310 using a 1.25 × 3⅝-inch label.
+          Sized for a Dymo LabelWriter 550 using a 1.125 × 3.5-inch label.
         </p>
         <div className="actions">
           <button type="button" onClick={() => window.print()}>
@@ -80,7 +80,6 @@ export default function AssetStickerPage({ id, categoryId }) {
             />
           </div>
           <div className="sticker-meta">
-            <div className="sticker-label">Asset ID</div>
             <div className="sticker-asset-id">{item.assetId}</div>
             {item.type ? <div className="sticker-type">{item.type}</div> : null}
           </div>
